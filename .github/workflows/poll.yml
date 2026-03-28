@@ -1,0 +1,21 @@
+name: Send Daily Poll
+
+on:
+  schedule:
+    - cron: "0 14 * * *" # 14:00 UTC = 19:00 Almaty (UTC+5)
+  workflow_dispatch: # allows manual trigger for testing
+
+jobs:
+  send-poll:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install python-telegram-bot==21.6
+      - name: Send poll
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python send_poll.py

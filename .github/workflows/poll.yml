@@ -3,10 +3,21 @@ name: Send Daily Poll
 on:
   schedule:
     - cron: "0 14 * * *" # 14:00 UTC = 19:00 Almaty (UTC+5)
-  workflow_dispatch: # allows manual trigger for testing
+    - cron: "0 16 * * *" # 16:00 UTC = 21:00 Almaty (2h after poll)
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Which action to run"
+        required: true
+        default: "poll"
+        type: choice
+        options:
+          - poll
+          - remind
 
 jobs:
   send-poll:
+    if: github.event.schedule == '0 14 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'poll')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,3 +30,18 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python send_poll.py
+
+  remind:
+    if: github.event.schedule == '0 16 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'remind')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install python-telegram-bot==21.6
+      - name: Remind non-voters
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python remind.py

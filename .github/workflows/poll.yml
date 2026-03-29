@@ -17,7 +17,7 @@ on:
 
 jobs:
   send-poll:
-    if: github.event.schedule == '0 14 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'poll')
+    if: github.event.schedule == '55 13 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'poll')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

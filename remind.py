@@ -16,12 +16,20 @@ async def main():
     bot = Bot(token=os.environ["BOT_TOKEN"])
     chat_id = os.environ["CHAT_ID"]
 
+    # Read today's poll ID
+    try:
+        with open("poll_id.txt") as f:
+            today_poll_id = f.read().strip()
+    except FileNotFoundError:
+        print("No poll_id.txt found — poll may not have been sent today")
+        return
+
     updates = await bot.get_updates()
 
-    # Find the latest poll answer updates to collect who responded
+    # Only count answers for today's specific poll
     responded = set()
     for update in updates:
-        if update.poll_answer:
+        if update.poll_answer and update.poll_answer.poll_id == today_poll_id:
             user = update.poll_answer.user
             if user.username:
                 responded.add(user.username.lower())

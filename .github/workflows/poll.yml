@@ -30,6 +30,12 @@ jobs:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python send_poll.py
+      - name: Upload poll ID
+        uses: actions/upload-artifact@v4
+        with:
+          name: poll-id
+          path: poll_id.txt
+          retention-days: 1
 
   remind:
     if: github.event.schedule == '0 16 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'remind')
@@ -40,6 +46,12 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install python-telegram-bot==21.6
+      - name: Download poll ID
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          name: poll-id
+          workflow: poll.yml
+          search_artifacts: true
       - name: Remind non-voters
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}

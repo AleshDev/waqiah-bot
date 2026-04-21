@@ -2,8 +2,8 @@ name: Send Daily Poll
 
 on:
   schedule:
-    - cron: "0 14 * * *" # 14:00 UTC = 19:00 Almaty (UTC+5)
-    - cron: "0 16 * * *" # 16:00 UTC = 21:00 Almaty (2h after poll)
+    - cron: "0 9 * * *"  # 09:00 UTC = 14:00 Almaty (UTC+5)
+    - cron: "0 11 * * *" # 11:00 UTC = 16:00 Almaty (2h after poll)
   workflow_dispatch:
     inputs:
       action:
@@ -17,7 +17,7 @@ on:
 
 jobs:
   send-poll:
-    if: github.event.schedule == '0 14 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'poll')
+    if: github.event.schedule == '0 9 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'poll')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
           retention-days: 1
 
   remind:
-    if: github.event.schedule == '0 16 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'remind')
+    if: github.event.schedule == '0 11 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'remind')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
